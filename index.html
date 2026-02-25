@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>геогессер.рф — Проверь свои знания местности в СНГ!</title>
     <meta name="color-scheme" content="light dark">
     <link rel="preconnect" href="https://api-maps.yandex.ru">
@@ -10,41 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        html, body {
-    width: 100%;
-    min-height: 100%;
-    /* overflow: hidden; — УБИРАЕМ ЭТОТ ПУНКТ, он мешает мобильной версии */
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    padding: 0;
-    -webkit-text-size-adjust: 100%; /* Запрещаем айфонам менять размер текста */
-}
-
-/* Специальные правки для мобильных экранов */
-@media (max-width: 600px) {
-    .hero-title {
-        font-size: 32px !important; /* Уменьшаем гигантский заголовок */
-        line-height: 1.1;
-    }
-    .hero-desc {
-        font-size: 14px !important;
-        padding: 0 10px;
-    }
-    .hero-content {
-        padding: 60px 15px 40px !important;
-    }
-    .hero-btn {
-        width: 100%; /* Кнопка на всю ширину для удобства */
-        max-width: 300px;
-        padding: 18px;
-    }
-    .hero-stats {
-        gap: 15px; /* Сжимаем статы, чтобы влезли в ряд */
-    }
-    .hero-stat-val {
-        font-size: 20px !important;
-    }
-}
+        html,body,#root{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-serif}
         ::-webkit-scrollbar{width:5px}
 
         :root{
@@ -437,7 +403,16 @@ function App(){
                     ))}
                 </div>
             </div>
-            
+
+            <div id="leaderboard"className="lb-section">
+                <FadeUp><div className="modes-head"><div className="modes-label">Таблица лидеров</div><div className="modes-title">Лучшие игроки</div></div></FadeUp>
+                <FadeUp delay={1}><div className="lb-box">
+                    <div className="lb-hd"><div>#</div><div>Игрок</div><div style={{textAlign:'right'}}>Режим</div><div style={{textAlign:'right'}}>Очки</div></div>
+                    {lb.length===0&&<div className="lb-empty">Сыграйте первую игру, чтобы попасть в рейтинг</div>}
+                    {lb.slice(0,20).map((e,i)=><div key={i}className="lb-r"><div className={'lb-rk'+(i===0?' lb-g':i===1?' lb-s':i===2?' lb-b':'')}>{i<3?['🥇','🥈','🥉'][i]:i+1}</div><div className="lb-nm">{e.n}</div><div className="lb-md">{MD[e.m]?.n||e.m}</div><div className="lb-sc">{e.s}</div></div>)}
+                </div></FadeUp>
+            </div>
+
             <div className="site-footer">
                 <FadeUp><a href={DN}target="_blank"rel="noopener noreferrer"className="sf-donate">❤ Поддержать проект</a></FadeUp>
                 <FadeUp delay={1}><div className="sf-copy">Разработал <strong style={{color:'var(--text2)'}}>Ваше Имя</strong> · 2025</div></FadeUp>
@@ -639,7 +614,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
         <p style="font-size: 12px; line-height: 1.6; opacity: 0.8;">
             1. Мы храним только ваш никнейм для топа и куки для темы.<br>
             2. Данные защищены.<br>
-            3. Владелец: Малинка Малинкин (малинка.dev)
+            3. Владелец: Тёма Малинкин (малинка.dev)
         </p>
     </div>
 </div>
@@ -677,35 +652,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
     }, 500);
 </script>
 
-<script>
-
-    <script>
-    // Ждем загрузки и проверяем ширину
-    window.addEventListener('load', () => {
-        if (window.innerWidth < 600) {
-            // Исправляем высоту hero-секции под мобильный браузер (учет панели адреса)
-            const vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            
-            // Если есть элементы с фиксированной шириной — лечим их
-            document.querySelectorAll('*').forEach(el => {
-                if (el.offsetWidth > window.innerWidth) {
-                    el.style.maxWidth = '100vw';
-                    el.style.boxSizing = 'border-box';
-                }
-            });
-        }
-    });
-</script>
-
-    
 </body>
 </html>
-
-
-
-
-
 
 
 
