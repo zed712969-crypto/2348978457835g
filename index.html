@@ -551,146 +551,110 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
     }
 </style>
 
-<!-- 🔥 SMART FOOTER FIX: АВТО-ЦВЕТА + КНОПКА ДОНАТА 🔥 -->
+<!-- 🔥 ZOMBIE FOOTER: БЕССМЕРТНЫЙ ПОДВАЛ v3.0 🔥 -->
 <style>
-    /* 1. ГЛАВНЫЙ КОНТЕЙНЕР */
-    .malinka-footer {
-        padding: 40px 20px 60px;
-        text-align: center;
-        background: transparent;
-        position: relative;
-        z-index: 10;
-        border-top: 1px solid var(--border); /* Цвет границы из темы */
-        margin-top: -1px;
-        color: var(--text); /* Текст цвета темы */
-    }
-
-    /* 2. БРЕНД (Градиент) */
-    .mf-brand {
+    /* СТИЛИ НОВОГО ПОДВАЛА */
+    .malinka-footer-content {
+        display: flex; flex-direction: column; align-items: center; gap: 15px;
+        padding-bottom: 20px;
         font-family: 'Montserrat', sans-serif;
-        font-size: 24px;
-        font-weight: 900;
-        text-decoration: none;
+    }
+    
+    /* КНОПКА ДОНАТА */
+    .mf-donate {
+        background: #e94560; color: #fff !important;
+        padding: 12px 30px; border-radius: 12px; font-weight: 800; font-size: 13px;
+        text-decoration: none; box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        transition: transform 0.2s; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .mf-donate:hover { transform: translateY(-2px); }
+
+    /* БРЕНД (Градиент) */
+    .mf-brand {
+        font-size: 22px; font-weight: 900; text-decoration: none;
         background: linear-gradient(90deg, #ff66c4 0%, #4facfe 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-        margin-bottom: 20px;
-        transition: transform 0.3s;
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        margin-top: 10px; display: inline-block;
     }
-    .mf-brand:hover { transform: scale(1.05); filter: drop-shadow(0 0 10px rgba(79, 172, 254, 0.4)); }
+
+    /* КНОПКА КУПИТЬ */
+    .mf-buy {
+        background: var(--card); border: 1px solid var(--border); color: var(--text) !important;
+        padding: 10px 24px; border-radius: 50px; font-weight: 700; font-size: 12px;
+        text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .mf-buy:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    /* ССЫЛКИ */
+    .mf-links { display: flex; gap: 15px; font-size: 11px; color: var(--text3); margin-top: 5px; }
+    .mf-link { cursor: pointer; border-bottom: 1px dotted var(--text3); }
     
-    /* 3. КНОПКА КУПИТЬ СКРИПТ */
-    .mf-btn-buy {
-        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        background: var(--card); /* Фон карточки */
-        border: 1px solid var(--border);
-        color: var(--text); /* Цвет текста */
-        padding: 12px 28px; border-radius: 50px;
-        text-decoration: none; font-size: 13px; font-weight: 700;
-        transition: all 0.3s; margin-bottom: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .mf-btn-buy:hover {
-        background: var(--card-h);
-        transform: translateY(-2px);
-        border-color: var(--accent);
-        box-shadow: 0 8px 20px var(--accent-glow);
-    }
-
-    /* 4. КНОПКА ПОДДЕРЖАТЬ (ВЕРНУЛИ!) */
-    .mf-btn-donate {
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        background: var(--red); /* Красный цвет */
-        color: #fff !important; /* Всегда белый текст */
-        padding: 10px 24px; border-radius: 12px;
-        text-decoration: none; font-size: 12px; font-weight: 800;
-        transition: all 0.3s; margin-bottom: 30px;
-        box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
-    }
-    .mf-btn-donate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(233, 69, 96, 0.6);
-    }
-
-    /* 5. ССЫЛКИ */
-    .mf-links { display: flex; justify-content: center; gap: 20px; font-size: 11px; color: var(--text3); }
-    .mf-link { cursor: pointer; transition: color 0.3s; text-decoration: none; color: inherit; border-bottom: 1px dotted var(--border); }
-    .mf-link:hover { color: var(--text); border-bottom-color: var(--text); }
-
-    /* МОДАЛКА (ТЕМНАЯ ВСЕГДА, ЧТОБЫ БЫЛО СТИЛЬНО) */
-    .pm-overlay {
+    /* МОДАЛКА */
+    #zombiePolicy {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
-        z-index: 9999; display: none; opacity: 0; transition: opacity 0.3s;
-        align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.85); z-index: 99999; display: none;
+        align-items: center; justify-content: center; backdrop-filter: blur(10px);
     }
-    .pm-overlay.open { display: flex; opacity: 1; }
-    
-    .pm-card {
-        width: 90%; max-width: 500px; max-height: 80vh;
-        background: #1e1245; /* Всегда темный фон */
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 20px; padding: 30px; position: relative;
-        overflow-y: auto; text-align: left; color: #e0e0e0;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    .zp-card {
+        background: #1e1245; border: 1px solid #ffffff20; width: 90%; max-width: 500px;
+        padding: 30px; border-radius: 20px; color: #fff; position: relative;
     }
-    .pm-close {
-        position: absolute; top: 15px; right: 15px;
-        background: rgba(255,255,255,0.1); border: none; color: #fff;
-        width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
-        font-weight: bold; transition: background 0.2s;
+    .zp-close {
+        position: absolute; top: 15px; right: 15px; background: #ffffff20;
+        border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
     }
-    .pm-close:hover { background: #e94560; }
 </style>
 
-<!-- МОДАЛКА -->
-<div id="policyModal" class="pm-overlay" onclick="closePolicy()">
-    <div class="pm-card" onclick="event.stopPropagation()">
-        <button class="pm-close" onclick="closePolicy()">✕</button>
-        <div style="font-size: 18px; font-weight: 800; margin-bottom: 15px; color: #fff;">Политика конфиденциальности</div>
-        <div style="font-size: 12px; line-height: 1.6; opacity: 0.8;">
-            <p>1. Мы собираем только куки (для сохранения темы) и никнейм для рейтинга.</p>
-            <p>2. Никаких паспортных данных и номеров карт.</p>
-            <p>3. Данные хранятся в зашифрованном виде.</p>
-            <p style="margin-top: 20px; color: #8b5cf6; font-weight: 700;">Владелец: Малинка Малинкин (малинка.dev)</p>
-        </div>
+<!-- САМА МОДАЛКА (Скрытая) -->
+<div id="zombiePolicy" onclick="document.getElementById('zombiePolicy').style.display='none'">
+    <div class="zp-card" onclick="event.stopPropagation()">
+        <button class="zp-close" onclick="document.getElementById('zombiePolicy').style.display='none'">✕</button>
+        <h2 style="margin-bottom: 15px;">Политика конфиденциальности</h2>
+        <p style="font-size: 12px; line-height: 1.6; opacity: 0.8;">
+            1. Мы храним только ваш никнейм для топа и куки для темы.<br>
+            2. Данные защищены.<br>
+            3. Владелец: Тёма Малинкин (малинка.dev)
+        </p>
     </div>
 </div>
 
 <script>
-    // СКРИПТ-ЗАМЕНЩИК v2.0
-    setTimeout(() => {
-        const oldFooter = document.querySelector('.site-footer');
-        if(oldFooter) {
-            oldFooter.innerHTML = `
-                <div class="malinka-footer">
-                    <a href="https://www.donationalerts.com/r/geoguesser_rf" target="_blank" class="mf-btn-donate">
+    // БЕССМЕРТНЫЙ СКРИПТ
+    // Проверяет каждые 500мс, на месте ли наш футер. Если нет — вставляет.
+    setInterval(() => {
+        const footer = document.querySelector('.site-footer');
+        if (footer && !footer.classList.contains('patched-by-tema')) {
+            footer.classList.add('patched-by-tema'); // Помечаем, что мы тут были
+            footer.innerHTML = `
+                <div class="malinka-footer-content">
+                    <a href="https://www.donationalerts.com/r/geoguesser_rf" target="_blank" class="mf-donate">
                         ❤ Поддержать проект
                     </a>
-                    <br>
-                    <div style="font-size: 9px; font-weight: 800; color: var(--text3); margin-bottom: 5px; letter-spacing: 2px;">DEVELOPED BY</div>
-                    <a href="https://t.me/malinkadev" target="_blank" class="mf-brand">malinka.dev</a>
-                    <br>
-                    <a href="https://t.me/malinkadev" target="_blank" class="mf-btn-buy">
-                        🛒 Купить сайт/скрипт
-                    </a>
-                    <div class="mf-links">
-                        <span class="mf-link" onclick="openPolicy()">Политика</span>
-                        <a href="https://t.me/malinkadev" target="_blank" class="mf-link">Контакты</a>
+                    
+                    <div>
+                        <div style="font-size: 9px; font-weight: 800; color: var(--text3); letter-spacing: 2px;">DEVELOPED BY</div>
+                        <a href="https://t.me/malinkadev" target="_blank" class="mf-brand">malinka.dev</a>
                     </div>
-                    <div style="margin-top: 25px; font-size: 10px; color: var(--text3); font-weight: 600;">ГеоГессер.РФ · 2026</div>
+
+                    <a href="https://t.me/malinkadev" target="_blank" class="mf-buy">
+                        🛒 Купить скрипт
+                    </a>
+
+                    <div class="mf-links">
+                        <span class="mf-link" onclick="document.getElementById('zombiePolicy').style.display='flex'">Политика</span>
+                        <a href="https://t.me/malinkadev" target="_blank" class="mf-link" style="text-decoration:none; border:none;">Связь</a>
+                    </div>
+                    <div style="font-size: 10px; color: var(--text3); margin-top: 10px;">ГеоГессер.РФ · 2026</div>
                 </div>
             `;
         }
-    }, 1000);
-
-    function openPolicy() { const m = document.getElementById('policyModal'); m.style.display = 'flex'; setTimeout(() => m.classList.add('open'), 10); }
-    function closePolicy() { const m = document.getElementById('policyModal'); m.classList.remove('open'); setTimeout(() => m.style.display = 'none', 300); }
+    }, 500);
 </script>
 
 </body>
 </html>
+
 
 
 
