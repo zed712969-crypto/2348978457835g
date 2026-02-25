@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>геогессер.рф — Проверь свои знания местности в СНГ!</title>
@@ -261,93 +259,13 @@
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
 <script type="text/babel">
-    const { useState, useEffect, useRef, useCallback } = React;
-
-// 2. Потом конфиг (открыли { ... и закрыли }; )
-const firebaseConfig = {
-  apiKey: "AIzaSyBwN74yzY-aqBUUs8YstoJZM7YMDfoa8Qw",
-  authDomain: "ytrtytry-34c65.firebaseapp.com",
-  projectId: "ytrtytry-34c65",
-  storageBucket: "ytrtytry-34c65.appspot.com",
-  messagingSenderId: "500017444373",
-  appId: "1:500017444373:web:45f771031dd7864abe401c"
-};
-
-// --- 🔥 ПОДКЛЮЧЕНИЕ К БАЗЕ ---
-let db = null;
-try {
-    // Проверяем, не инициализирован ли уже (чтобы React не ругался)
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    db = firebase.firestore();
-    console.log("🔥 База данных подключена и готова к бою!");
-} catch (e) {
-    console.warn("⚠️ Ошибка Firebase (играем оффлайн):", e);
-}
-
-// --- КОНСТАНТЫ ИГРЫ ---
-const RDS=5, MX=5000, MR=120, LK="gg6lb", NK="gg6nm", DN="https://www.donationalerts.com/r/geoguesser_rf";
-
-// --- 🧠 НОВЫЕ ФУНКЦИИ (ASYNC) ---
-
-// 1. ЗАГРУЗКА РЕЙТИНГА (ОБЛАКО + ЛОКАЛКА)
-async function lLB() {
-    let data = [];
-    
-    // Пробуем скачать из Google
-    if (db) {
-        try {
-            const snap = await db.collection('leaderboard')
-                .orderBy('s', 'desc') // Сортируем: много очков -> мало
-                .limit(50)            // Берем Топ-50
-                .get();
-            data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        } catch (e) {
-            console.log("Нет инета, грузим из кэша...");
-        }
-    }
-
-    // Если база пустая или нет инета — берем локальный файл
-    if (data.length === 0) {
-        data = JSON.parse(localStorage.getItem(LK)) || [];
-    }
-    return data;
-}
-
-// 2. СОХРАНЕНИЕ (ОБЛАКО + ЛОКАЛКА)
-async function sLB(n, s, m) {
-    const entry = {
-        n: n.substring(0, 15) || 'Аноним', // Режем ник до 15 символов
-        s: parseInt(s),
-        m: m,
-        d: Date.now()
-    };
-
-    // 1. Сохраняем себе (чтобы работало без инета)
-    const local = JSON.parse(localStorage.getItem(LK) || '[]');
-    local.push(entry);
-    local.sort((a,b) => b.s - a.s);
-    localStorage.setItem(LK, JSON.stringify(local.slice(0, 50)));
-
-    // 2. Отправляем в Google
-    if (db) {
-        try {
-            await db.collection('leaderboard').add(entry);
-            console.log("✅ Результат улетел в базу!");
-        } catch (e) {
-            console.error("❌ Ошибка отправки:", e);
-        }
-    }
-    
-    // Возвращаем свежий список
-    return await lLB();
-}
-
-// --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОСТАВЛЯЕМ КАК БЫЛО) ---
+const{useState,useEffect,useRef,useCallback}=React;
+const RDS=5,MX=5000,MR=120,LK="gg6lb",NK="gg6nm",DN="https://www.donationalerts.com/r/geoguesser_rf";
 function sc(m){return Math.round(Math.max(0,Math.min(MX,MX*Math.exp(-(m/1000)/150))))}
 function di(a,b){try{return ymaps.coordSystem.geo.getDistance(a,b)}catch(e){const R=6371e3,r=d=>d*Math.PI/180,x=Math.sin(r(b[0]-a[0])/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(r(b[1]-a[1])/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}}
 function fd(m){return m<1000?Math.round(m)+' м':(m/1000).toFixed(1)+' км'}
+function lLB(){try{return JSON.parse(localStorage.getItem(LK))||[]}catch(e){return[]}}
+function sLB(n,s,m){const l=lLB();l.push({n,s,m,d:Date.now()});l.sort((a,b)=>b.s-a.s);const t=l.slice(0,50);try{localStorage.setItem(LK,JSON.stringify(t))}catch(e){}return t}
 function getST(){return window.matchMedia?.('(prefers-color-scheme:light)').matches?'light':'dark'}
 function aT(t){document.documentElement.classList.toggle('light',t==='light')}
 
@@ -485,16 +403,7 @@ function App(){
                     ))}
                 </div>
             </div>
-
-            <div id="leaderboard"className="lb-section">
-                <FadeUp><div className="modes-head"><div className="modes-label">Таблица лидеров</div><div className="modes-title">Лучшие игроки</div></div></FadeUp>
-                <FadeUp delay={1}><div className="lb-box">
-                    <div className="lb-hd"><div>#</div><div>Игрок</div><div style={{textAlign:'right'}}>Режим</div><div style={{textAlign:'right'}}>Очки</div></div>
-                    {lb.length===0&&<div className="lb-empty">Сыграйте первую игру, чтобы попасть в рейтинг</div>}
-                    {lb &&lb.slice(0,20).map((e,i)=><div key={i}className="lb-r"><div className={'lb-rk'+(i===0?' lb-g':i===1?' lb-s':i===2?' lb-b':'')}>{i<3?['🥇','🥈','🥉'][i]:i+1}</div><div className="lb-nm">{e.n}</div><div className="lb-md">{MD[e.m]?.n||e.m}</div><div className="lb-sc">{e.s}</div></div>)}
-                </div></FadeUp>
-            </div>
-
+            
             <div className="site-footer">
                 <FadeUp><a href={DN}target="_blank"rel="noopener noreferrer"className="sf-donate">❤ Поддержать проект</a></FadeUp>
                 <FadeUp delay={1}><div className="sf-copy">Разработал <strong style={{color:'var(--text2)'}}>Ваше Имя</strong> · 2025</div></FadeUp>
@@ -736,15 +645,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
 
 
 
