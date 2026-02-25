@@ -6,6 +6,8 @@
     <title>геогессер.рф — Проверь свои знания местности в СНГ!</title>
     <meta name="color-scheme" content="light dark">
     <link rel="preconnect" href="https://api-maps.yandex.ru">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=f5fb06a8-13c2-4b02-8ef9-ed5338fac035&lang=ru_RU" async></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -258,14 +260,91 @@
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
-<script type="text/babel">
-const{useState,useEffect,useRef,useCallback}=React;
-const RDS=5,MX=5000,MR=120,LK="gg6lb",NK="gg6nm",DN="https://www.donationalerts.com/r/geoguesser_rf";
+// --- ⚙️ НАСТРОЙКИ FIREBASE (ВСТАВЬ СВОИ ДАННЫЕ ИЗ КОНСОЛИ!) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBwN74yzY-aqBUUs8YstoJZM7YMDfoa8Qw",
+  authDomain: "ytrtytry-34c65.firebaseapp.com",
+  projectId: "ytrtytry-34c65",
+  storageBucket: "ytrtytry-34c65.firebasestorage.app",
+  messagingSenderId: "500017444373",
+  appId: "1:500017444373:web:45f771031dd7864abe401c"
+};
+
+// --- 🔥 ПОДКЛЮЧЕНИЕ К БАЗЕ ---
+let db = null;
+try {
+    // Проверяем, не инициализирован ли уже (чтобы React не ругался)
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.firestore();
+    console.log("🔥 База данных подключена и готова к бою!");
+} catch (e) {
+    console.warn("⚠️ Ошибка Firebase (играем оффлайн):", e);
+}
+
+// --- КОНСТАНТЫ ИГРЫ ---
+const RDS=5, MX=5000, MR=120, LK="gg6lb", NK="gg6nm", DN="https://www.donationalerts.com/r/geoguesser_rf";
+
+// --- 🧠 НОВЫЕ ФУНКЦИИ (ASYNC) ---
+
+// 1. ЗАГРУЗКА РЕЙТИНГА (ОБЛАКО + ЛОКАЛКА)
+async function lLB() {
+    let data = [];
+    
+    // Пробуем скачать из Google
+    if (db) {
+        try {
+            const snap = await db.collection('leaderboard')
+                .orderBy('s', 'desc') // Сортируем: много очков -> мало
+                .limit(50)            // Берем Топ-50
+                .get();
+            data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        } catch (e) {
+            console.log("Нет инета, грузим из кэша...");
+        }
+    }
+
+    // Если база пустая или нет инета — берем локальный файл
+    if (data.length === 0) {
+        data = JSON.parse(localStorage.getItem(LK)) || [];
+    }
+    return data;
+}
+
+// 2. СОХРАНЕНИЕ (ОБЛАКО + ЛОКАЛКА)
+async function sLB(n, s, m) {
+    const entry = {
+        n: n.substring(0, 15) || 'Аноним', // Режем ник до 15 символов
+        s: parseInt(s),
+        m: m,
+        d: Date.now()
+    };
+
+    // 1. Сохраняем себе (чтобы работало без инета)
+    const local = JSON.parse(localStorage.getItem(LK) || '[]');
+    local.push(entry);
+    local.sort((a,b) => b.s - a.s);
+    localStorage.setItem(LK, JSON.stringify(local.slice(0, 50)));
+
+    // 2. Отправляем в Google
+    if (db) {
+        try {
+            await db.collection('leaderboard').add(entry);
+            console.log("✅ Результат улетел в базу!");
+        } catch (e) {
+            console.error("❌ Ошибка отправки:", e);
+        }
+    }
+    
+    // Возвращаем свежий список
+    return await lLB();
+}
+
+// --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОСТАВЛЯЕМ КАК БЫЛО) ---
 function sc(m){return Math.round(Math.max(0,Math.min(MX,MX*Math.exp(-(m/1000)/150))))}
 function di(a,b){try{return ymaps.coordSystem.geo.getDistance(a,b)}catch(e){const R=6371e3,r=d=>d*Math.PI/180,x=Math.sin(r(b[0]-a[0])/2)**2+Math.cos(r(a[0]))*Math.cos(r(b[0]))*Math.sin(r(b[1]-a[1])/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}}
 function fd(m){return m<1000?Math.round(m)+' м':(m/1000).toFixed(1)+' км'}
-function lLB(){try{return JSON.parse(localStorage.getItem(LK))||[]}catch(e){return[]}}
-function sLB(n,s,m){const l=lLB();l.push({n,s,m,d:Date.now()});l.sort((a,b)=>b.s-a.s);const t=l.slice(0,50);try{localStorage.setItem(LK,JSON.stringify(t))}catch(e){}return t}
 function getST(){return window.matchMedia?.('(prefers-color-scheme:light)').matches?'light':'dark'}
 function aT(t){document.documentElement.classList.toggle('light',t==='light')}
 
@@ -654,6 +733,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
 
 </body>
 </html>
+
 
 
 
