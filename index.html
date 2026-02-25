@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>геогессер.рф — Проверь свои знания местности в СНГ!</title>
     <meta name="color-scheme" content="light dark">
     <link rel="preconnect" href="https://api-maps.yandex.ru">
@@ -10,7 +10,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        html,body,#root{width:100%;height:100%;overflow:hidden;font-family:'Montserrat',sans-serif}
+        html, body {
+    width: 100%;
+    min-height: 100%;
+    /* overflow: hidden; — УБИРАЕМ ЭТОТ ПУНКТ, он мешает мобильной версии */
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%; /* Запрещаем айфонам менять размер текста */
+}
+
+/* Специальные правки для мобильных экранов */
+@media (max-width: 600px) {
+    .hero-title {
+        font-size: 32px !important; /* Уменьшаем гигантский заголовок */
+        line-height: 1.1;
+    }
+    .hero-desc {
+        font-size: 14px !important;
+        padding: 0 10px;
+    }
+    .hero-content {
+        padding: 60px 15px 40px !important;
+    }
+    .hero-btn {
+        width: 100%; /* Кнопка на всю ширину для удобства */
+        max-width: 300px;
+        padding: 18px;
+    }
+    .hero-stats {
+        gap: 15px; /* Сжимаем статы, чтобы влезли в ряд */
+    }
+    .hero-stat-val {
+        font-size: 20px !important;
+    }
+}
         ::-webkit-scrollbar{width:5px}
 
         :root{
@@ -644,86 +678,30 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
 </script>
 
 <script>
-  (function() {
-    // 1. ПРИНУДИТЕЛЬНЫЙ МАСШТАБ (самое важное для мобилок)
-    let m = document.querySelector('meta[name="viewport"]');
-    if (!m) { m = document.createElement('meta'); m.name = "viewport"; document.head.appendChild(m); }
-    m.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 
-    // 2. УДАЛЯЕМ ЖЕСТКУЮ ШИРИНУ (ищем блоки, которые мешают)
-    const allElements = document.querySelectorAll('*');
-    allElements.forEach(el => {
-      const style = window.getComputedStyle(el);
-      if (parseInt(style.width) > window.innerWidth || parseInt(style.minWidth) > 300) {
-        el.style.width = 'auto';
-        el.style.minWidth = '0';
-        el.style.maxWidth = '100vw';
-      }
+    <script>
+    // Ждем загрузки и проверяем ширину
+    window.addEventListener('load', () => {
+        if (window.innerWidth < 600) {
+            // Исправляем высоту hero-секции под мобильный браузер (учет панели адреса)
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            
+            // Если есть элементы с фиксированной шириной — лечим их
+            document.querySelectorAll('*').forEach(el => {
+                if (el.offsetWidth > window.innerWidth) {
+                    el.style.maxWidth = '100vw';
+                    el.style.boxSizing = 'border-box';
+                }
+            });
+        }
     });
-
-    // 3. СТИЛИ-КЛЕРКИ (принудительно красим и увеличиваем)
-    const s = document.createElement('style');
-    s.innerHTML = `
-      @media (max-width: 600px) {
-        html, body { 
-          width: 100% !important; 
-          margin: 0 !important; 
-          padding: 0 !important; 
-          overflow-x: hidden !important; 
-          background: #f0f0ff !important; /* Цвет как на скрине */
-        }
-        
-        /* Заголовок "Вся Россия и СНГ" */
-        h1, .title, [class*="title"] {
-          font-size: 32px !important;
-          font-weight: 900 !important;
-          color: #444 !important;
-          margin: 40px 10px 10px !important;
-          text-transform: uppercase !important;
-          opacity: 1 !important;
-        }
-
-        /* Текст про Калининград (на скрине он очень бледный) */
-        p, .subtitle, {
-          font-size: 16px !important;
-          color: #666 !important;
-          opacity: 1 !important;
-          padding: 10px 20px !important;
-          line-height: 1.4 !important;
-          display: block !important;
-        }
-
-        /* Кнопка ИГРАТЬ */
-        button, .btn-play, [class*="button"] {
-          width: 90% !important;
-          max-width: 320px !important;
-          height: 65px !important;
-          font-size: 24px !important;
-          background: #ef4444 !important; /* Красный как на скрине */
-          color: white !important;
-          border-radius: 50px !important;
-          margin: 40px auto !important;
-          display: flex !important;
-          align-items: center; justify-content: center;
-          box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
-        }
-
-        /* Статистика (0 0 70+) */
-        [class*="stats"], [class*="row"] {
-          display: flex !important;
-          flex-direction: row !important;
-          justify-content: space-evenly !important;
-          margin: 20px 0 !important;
-        }
-      }
-    `;
-    document.head.appendChild(s);
-  })();
 </script>
 
     
 </body>
 </html>
+
 
 
 
