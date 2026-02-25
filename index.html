@@ -491,7 +491,7 @@ function App(){
                 <FadeUp delay={1}><div className="lb-box">
                     <div className="lb-hd"><div>#</div><div>Игрок</div><div style={{textAlign:'right'}}>Режим</div><div style={{textAlign:'right'}}>Очки</div></div>
                     {lb.length===0&&<div className="lb-empty">Сыграйте первую игру, чтобы попасть в рейтинг</div>}
-                    {lb.slice(0,20).map((e,i)=><div key={i}className="lb-r"><div className={'lb-rk'+(i===0?' lb-g':i===1?' lb-s':i===2?' lb-b':'')}>{i<3?['🥇','🥈','🥉'][i]:i+1}</div><div className="lb-nm">{e.n}</div><div className="lb-md">{MD[e.m]?.n||e.m}</div><div className="lb-sc">{e.s}</div></div>)}
+                    {lb &&lb.slice(0,20).map((e,i)=><div key={i}className="lb-r"><div className={'lb-rk'+(i===0?' lb-g':i===1?' lb-s':i===2?' lb-b':'')}>{i<3?['🥇','🥈','🥉'][i]:i+1}</div><div className="lb-nm">{e.n}</div><div className="lb-md">{MD[e.m]?.n||e.m}</div><div className="lb-sc">{e.s}</div></div>)}
                 </div></FadeUp>
             </div>
 
@@ -736,6 +736,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
 
 </body>
 </html>
+
 
 
 
