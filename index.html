@@ -643,9 +643,77 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
     }, 500);
 </script>
 
+    <!-- Исправление мобильной версии для Геогессера -->
+<script>
+  (function() {
+    // 1. ПРИНУДИТЕЛЬНЫЙ VIEWPORT (чтобы телефон не мельчил)
+    let m = document.querySelector('meta[name="viewport"]');
+    if (!m) {
+      m = document.createElement('meta');
+      m.name = "viewport";
+      document.head.appendChild(m);
+    }
+    m.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+
+    // 2. СТИЛИ ДЛЯ МОБИЛОК (перебиваем десктопные размеры)
+    const s = document.createElement('style');
+    s.innerHTML = `
+      @media (max-width: 768px) {
+        /* Общие настройки страницы */
+        html, body { 
+          margin: 0 !important; 
+          padding: 0 !important; 
+          width: 100vw !important; 
+          overflow-x: hidden !important; 
+          font-size: 16px !important;
+        }
+
+        /* Главный заголовок (Вся Россия и СНГ) */
+        h1, .main-title, [class*="title"] {
+          font-size: 8vw !important;
+          width: 90% !important;
+          margin: 20px auto !important;
+          text-align: center !important;
+          line-height: 1.2 !important;
+        }
+
+        /* Текст под заголовком (от Калининграда до Камчатки) */
+        p, .subtitle,, [class*="desc"] {
+          font-size: 4.5vw !important;
+          color: rgba(255,255,255, 0.9) !important; /* Делаем ярче */
+          padding: 0 15px !important;
+          line-height: 1.4 !important;
+          opacity: 1 !important;
+        }
+
+        /* Кнопка "Играть" */
+        button, .btn, [class*="button"], [class*="btn"] {
+          width: 85% !important;
+          height: 60px !important;
+          font-size: 24px !important;
+          margin: 30px auto !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        /* Статистика (0 0 70+) */
+        .stats, [class*="stat"] {
+          flex-direction: row !important;
+          justify-content: space-around !important;
+          width: 100% !important;
+          margin: 20px 0 !important;
+        }
+      }
+    `;
+    document.head.appendChild(s);
+  })();
+</script>
+
     
 </body>
 </html>
+
 
 
 
