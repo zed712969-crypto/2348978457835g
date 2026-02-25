@@ -643,65 +643,76 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
     }, 500);
 </script>
 
-    <!-- Исправление мобильной версии для Геогессера -->
 <script>
   (function() {
-    // 1. ПРИНУДИТЕЛЬНЫЙ VIEWPORT (чтобы телефон не мельчил)
+    // 1. ПРИНУДИТЕЛЬНЫЙ МАСШТАБ (самое важное для мобилок)
     let m = document.querySelector('meta[name="viewport"]');
-    if (!m) {
-      m = document.createElement('meta');
-      m.name = "viewport";
-      document.head.appendChild(m);
-    }
+    if (!m) { m = document.createElement('meta'); m.name = "viewport"; document.head.appendChild(m); }
     m.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
 
-    // 2. СТИЛИ ДЛЯ МОБИЛОК (перебиваем десктопные размеры)
+    // 2. УДАЛЯЕМ ЖЕСТКУЮ ШИРИНУ (ищем блоки, которые мешают)
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(el => {
+      const style = window.getComputedStyle(el);
+      if (parseInt(style.width) > window.innerWidth || parseInt(style.minWidth) > 300) {
+        el.style.width = 'auto';
+        el.style.minWidth = '0';
+        el.style.maxWidth = '100vw';
+      }
+    });
+
+    // 3. СТИЛИ-КЛЕРКИ (принудительно красим и увеличиваем)
     const s = document.createElement('style');
     s.innerHTML = `
-      @media (max-width: 768px) {
-        /* Общие настройки страницы */
+      @media (max-width: 600px) {
         html, body { 
+          width: 100% !important; 
           margin: 0 !important; 
           padding: 0 !important; 
-          width: 100vw !important; 
           overflow-x: hidden !important; 
-          font-size: 16px !important;
+          background: #f0f0ff !important; /* Цвет как на скрине */
         }
-
-        /* Главный заголовок (Вся Россия и СНГ) */
-        h1, .main-title, [class*="title"] {
-          font-size: 8vw !important;
-          width: 90% !important;
-          margin: 20px auto !important;
-          text-align: center !important;
-          line-height: 1.2 !important;
-        }
-
-        /* Текст под заголовком (от Калининграда до Камчатки) */
-        p, .subtitle,, [class*="desc"] {
-          font-size: 4.5vw !important;
-          color: rgba(255,255,255, 0.9) !important; /* Делаем ярче */
-          padding: 0 15px !important;
-          line-height: 1.4 !important;
+        
+        /* Заголовок "Вся Россия и СНГ" */
+        h1, .title, [class*="title"] {
+          font-size: 32px !important;
+          font-weight: 900 !important;
+          color: #444 !important;
+          margin: 40px 10px 10px !important;
+          text-transform: uppercase !important;
           opacity: 1 !important;
         }
 
-        /* Кнопка "Играть" */
-        button, .btn, [class*="button"], [class*="btn"] {
-          width: 85% !important;
-          height: 60px !important;
+        /* Текст про Калининград (на скрине он очень бледный) */
+        p, .subtitle, {
+          font-size: 16px !important;
+          color: #666 !important;
+          opacity: 1 !important;
+          padding: 10px 20px !important;
+          line-height: 1.4 !important;
+          display: block !important;
+        }
+
+        /* Кнопка ИГРАТЬ */
+        button, .btn-play, [class*="button"] {
+          width: 90% !important;
+          max-width: 320px !important;
+          height: 65px !important;
           font-size: 24px !important;
-          margin: 30px auto !important;
+          background: #ef4444 !important; /* Красный как на скрине */
+          color: white !important;
+          border-radius: 50px !important;
+          margin: 40px auto !important;
           display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
+          align-items: center; justify-content: center;
+          box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
         }
 
         /* Статистика (0 0 70+) */
-        .stats, [class*="stat"] {
+        [class*="stats"], [class*="row"] {
+          display: flex !important;
           flex-direction: row !important;
-          justify-content: space-around !important;
-          width: 100% !important;
+          justify-content: space-evenly !important;
           margin: 20px 0 !important;
         }
       }
@@ -713,6 +724,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(
     
 </body>
 </html>
+
 
 
 
